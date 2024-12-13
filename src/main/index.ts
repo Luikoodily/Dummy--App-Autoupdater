@@ -2,6 +2,14 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import handleIpc from '@main/ipc'
+import logger, { log } from '@main/utils/logger'
+
+logger.info('Main', 'Main process started')
+
+log.initialize({ preload: true })
+
+let mainWindow: BrowserWindow
 
 function createWindow(): void {
   // Create the browser window.
@@ -59,6 +67,9 @@ app.whenReady().then(() => {
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
+
+  // Handle IPC messages
+  handleIpc(mainWindow)
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common
